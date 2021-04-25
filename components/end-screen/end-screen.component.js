@@ -3,19 +3,19 @@ import {View, Text, StyleSheet, BackHandler} from "react-native";
 import SingleButton from "../board/button/button.component";
 import {GAME_SCREEN} from "../../utils/constant";
 
-const EndScreen = ({setCurrentScreen, numberOfRounds, score, hintsUsed, actualNumber}) => {
+const EndScreen = ({setCurrentScreen, data}) => {
 	return (
 		<View style={{...styles.center}}>
 			<View>
 				<Text style={{...styles.fonts}}>
-					hello brother
+					{JSON.stringify(data)}
 				</Text>
 			</View>
 			<View>
 				<View>
 					<SingleButton handlePress={() => {
 						setCurrentScreen(GAME_SCREEN)
-					}} width={250} key="start-game" buttonText="Play Again" colorB="green" marginTop={50}/>
+					}} width={250} key="play-game" buttonText="Play Again" colorB="green" marginTop={50}/>
 
 					<SingleButton handlePress={() => {
 						BackHandler.exitApp();
