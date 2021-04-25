@@ -1,22 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 import BoardComponent from "./components/board/board.component";
+import StartScreen from "./components/start-screen/start-screen.component";
+import EndScreen from "./components/end-screen/end-screen.component";
+import {GAME_SCREEN, START_GAME} from "./utils/constant";
 
 export default function App() {
-	const [randomNumber, setRandomNumber] = useState();
+	const getRandomNumber = () => {
+		return (Math.round(1 + Math.random() * 99))
+	}
 
-	useEffect(() => {
-		setRandomNumberFunc();
-	}, []);
+	const [roundRandom, setRoundRandom] = useState({roundNumber: 1, randomNumber: getRandomNumber()});
+	const [currentScreen, setCurrentScreen] = useState(START_GAME);
 
-	const setRandomNumberFunc = () => {
-		setRandomNumber((Math.round(1 + Math.random() * 99)));
+	const setRoundRandomFunc = () => {
+		setRoundRandom({roundNumber: roundRandom.roundNumber + 1, randomNumber: getRandomNumber()});
+	};
+
+	const resetValues = () => {
+		setRoundRandom({roundNumber: 1, randomNumber: getRandomNumber()});
 	};
 
 	return (
 		<View style={styles.container}>
 			<View style={{flex: 2}}>
-				<BoardComponent randomNumber={randomNumber} setRandomNumberFunc={setRandomNumberFunc}/>
+				{currentScreen === START_GAME ? <StartScreen setCurrentScreen={setCurrentScreen}/> : currentScreen === GAME_SCREEN ?
+					<BoardComponent resetValues={resetValues} roundRandom={roundRandom}
+													setRandomNumberFunc={setRoundRandomFunc} setCurrentScreen={setCurrentScreen}/> : <EndScreen setCurrentScreen={setCurrentScreen}/>}
 			</View>
 		</View>
 	);
@@ -25,6 +35,8 @@ export default function App() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexDirection: "column"
-	},
+		flexDirection: "column",
+		justifyContent: "center",
+		paddingTop: 80,
+	}
 });
