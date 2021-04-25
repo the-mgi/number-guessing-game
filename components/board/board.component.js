@@ -3,16 +3,25 @@ import {FlatList, StyleSheet, View} from 'react-native';
 import SingleButton from "./button/button.component";
 import TopHeader from "./top-header/top-header";
 import RoundScoring from "./round-scoring/round-scoring";
-import {MAX_ATTEMPTS, MAX_NUMBER_OF_ROUNDS, SCORE_PER_QUESTION, WIDTH} from "../../utils/constant";
+import {
+	END_GAME,
+	GAME_SCREEN,
+	MAX_ATTEMPTS,
+	MAX_NUMBER_OF_ROUNDS,
+	SCORE_DEDUCT_USING_HINT,
+	SCORE_PER_QUESTION,
+	WIDTH
+} from "../../utils/constant";
+import ModalComponent from "../modal-component/modal.component";
 
-const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurrentScreen}) => {
+const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurrentScreen, record, setRecord}) => {
 	const [stringValue, setStringValue] = useState({
 		text: "{Your input will appear here}",
 		isFirstTime: true,
 		color: "black"
 	});
 	const [scoreAttempts, setScore] = useState({score: 0, attempts: 1});
-	const [record, setRecord] = useState([]);
+	const [hintStatus, setHintStatus] = useState({visibility: false, count: 0});
 
 	const array = Array.from({length: 9}, (_, index) => index + 1);
 	array.push(0, ".");
@@ -32,6 +41,10 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 			isPassed: false
 		}]);
 	}, [roundRandom]);
+
+	useEffect(() => {
+		setRecord([]);
+	}, []);
 
 	const handleSubmit = (txt) => {
 		if (txt.indexOf("&") < 0 && roundRandom.roundNumber !== MAX_NUMBER_OF_ROUNDS) {
@@ -55,7 +68,7 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 			finalArray.splice(roundRandom.roundNumber - 1, 1, arrayToUpdate);
 			setRecord(finalArray);
 		} else {
-			setCurrentScreen("game-end-screen");
+			setCurrentScreen(END_GAME);
 		}
 
 		if (scoreAttempts.attempts >= MAX_ATTEMPTS) {
@@ -68,7 +81,12 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 		setRecord([]);
 		setScore({attempts: 1, score: 0});
 		setStringValue({color: "black", text: "{Your input will appear here}", isFirstTime: true});
+		setHintStatus({visible: false, count: 0})
 		resetValues();
+	};
+
+	const updateHintStatus = (visibility, count) => {
+		setHintStatus({visibility: visibility, count: count || hintStatus.count});
 	};
 
 	return (
@@ -100,9 +118,18 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 					/>
 				</View>
 				<View>
+					<SingleButton key="hint" handlePress={() => {
+						updateHintStatus(!hintStatus.visibility, hintStatus.count + 1);
+						setScore({...scoreAttempts, score: scoreAttempts.score - SCORE_DEDUCT_USING_HINT})
+					}} buttonText={`Show Hint (${hintStatus.count})`} width={WIDTH * 2} colorB="orange"/>
+				</View>
+				<View>
 					<SingleButton key="reset" handlePress={handleReset} buttonText="Reset" width={WIDTH * 2} colorB="red"/>
 				</View>
 			</View>
+			{hintStatus.visibility && <ModalComponent setModalVisible={() => {
+				updateHintStatus(!hintStatus.visibility)
+			}} modalVisible={hintStatus.visibility} randomNumber={roundRandom.randomNumber}/>}
 		</View>
 	);
 };
