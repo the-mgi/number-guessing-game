@@ -85,6 +85,10 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 
 	const updateHintStatus = (visibility, count) => {
 		setHintStatus({visibility: visibility, count: count || hintStatus.count});
+		let finalArray = record;
+		const lastObject = record[record.length - 1];
+		finalArray[finalArray.length - 1] = {...lastObject, hintsUsed: lastObject.hintsUsed ? lastObject.hintsUsed + 1 : 1};
+		setRecord(finalArray);
 	};
 
 	return (
@@ -110,7 +114,7 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 					<SingleButton
 						key="submit"
 						handlePress={handleSubmit}
-						buttonText={((scoreAttempts.attempts === MAX_ATTEMPTS)) ? "Submit & Stats" : "Submit"}
+						buttonText="Submit"
 						width={WIDTH * 2}
 						colorB="green"
 					/>
@@ -125,9 +129,7 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 					<SingleButton key="reset" handlePress={handleReset} buttonText="Reset" width={WIDTH * 2} colorB="red"/>
 				</View>
 			</View>
-			{hintStatus.visibility && <ModalComponent setModalVisible={() => {
-				updateHintStatus(!hintStatus.visibility)
-			}} modalVisible={hintStatus.visibility} randomNumber={roundRandom.randomNumber}/>}
+			{hintStatus.visibility && <ModalComponent numberOfHintsUsed={hintStatus.count + 1} setModalVisible={() => {setHintStatus({visibility: false, count: hintStatus.count})}} modalVisible={hintStatus.visibility} randomNumber={roundRandom.randomNumber}/>}
 		</View>
 	);
 };

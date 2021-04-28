@@ -1,7 +1,8 @@
 import React from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from "react-native";
+import {MAX_NUMBER} from "../../utils/utils";
 
-const ModalComponent = ({modalVisible, setModalVisible, randomNumber}) => {
+const ModalComponent = ({modalVisible, setModalVisible, randomNumber, numberOfHintsUsed}) => {
 	return (
 		<View>
 			<Modal
@@ -17,7 +18,8 @@ const ModalComponent = ({modalVisible, setModalVisible, randomNumber}) => {
 						<View style={styles.center}>
 							<Text style={{...styles.modalText, fontWeight: "bold", color: "royalblue"}}>HINT</Text>
 							<Text style={styles.modalText}>The Current number lies in the range</Text>
-							<Text style={styles.modalText}>{randomNumber - 5}-{randomNumber + 5}</Text>
+							<Text
+								style={styles.modalText}>{(Math.round(MAX_NUMBER / numberOfHintsUsed) - randomNumber)} - {(Math.round(MAX_NUMBER / numberOfHintsUsed) + randomNumber)}</Text>
 							<Pressable
 								style={[styles.button, styles.buttonClose]}
 								onPress={() => setModalVisible(!modalVisible)}

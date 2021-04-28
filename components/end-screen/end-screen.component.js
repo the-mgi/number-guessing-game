@@ -1,14 +1,14 @@
 import React from 'react';
 import {BackHandler, StyleSheet, Text, View} from "react-native";
 import SingleButton from "../board/button/button.component";
-import {GAME_SCREEN, SCORE_PER_QUESTION} from "../../utils/utils";
+import {GAME_SCREEN, SCORE_DEDUCT_USING_HINT, SCORE_PER_QUESTION} from "../../utils/utils";
 
 const EndScreen = ({setCurrentScreen, data}) => {
 
 	const FormattedText = ({data}) => {
 		let totalScore = 0;
 		data.map(singleObject => {
-			totalScore = (totalScore + singleObject.isPassed ? SCORE_PER_QUESTION : 0) - 0
+			totalScore = (totalScore + (singleObject.isPassed ? SCORE_PER_QUESTION : 0)) - (singleObject?.hintsUsed ? singleObject.hintsUsed * SCORE_DEDUCT_USING_HINT : 0)
 		});
 
 		return (
@@ -17,7 +17,11 @@ const EndScreen = ({setCurrentScreen, data}) => {
 					return (
 						<View>
 							<Text style={{...styles.fonts}}>Round Number: {index + 1}</Text>
-							<Text style={{...styles.fonts}}>Round Score: {singleObject.finalAttempts * SCORE_PER_QUESTION}</Text>
+							<Text style={{...styles.fonts}}>Round Score:
+								{(singleObject.isPassed ? SCORE_PER_QUESTION : 0) -
+								(singleObject?.hintsUsed ? singleObject.hintsUsed * SCORE_DEDUCT_USING_HINT : 0)}
+							</Text>
+							<Text style={{...styles.fonts}}>Hints Used: {singleObject?.hintsUsed || 0}</Text>
 							<View
 								style={{
 									borderBottomColor: 'black',
@@ -30,12 +34,12 @@ const EndScreen = ({setCurrentScreen, data}) => {
 				<View>
 					<Text style={{...styles.fonts, ...styles.makeBold}}>Total Game Stats: </Text>
 					<Text style={{...styles.fonts}}>Total Number of Rounds Played: {data.length}</Text>
-					<Text style={{...styles.fonts}}>Total Game Score of {data.length} Rounds: {totalScore}</Text>
+					<Text style={{...styles.fonts}}>Total Game Score of {data.length} Round(s): {totalScore}</Text>
 				</View>
 			</View>
 		);
 	}
-	
+
 	return (
 		<View style={{...styles.center}}>
 			<View>
