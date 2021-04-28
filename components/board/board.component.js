@@ -5,13 +5,11 @@ import TopHeader from "./top-header/top-header";
 import RoundScoring from "./round-scoring/round-scoring";
 import {
 	END_GAME,
-	GAME_SCREEN,
 	MAX_ATTEMPTS,
-	MAX_NUMBER_OF_ROUNDS,
 	SCORE_DEDUCT_USING_HINT,
 	SCORE_PER_QUESTION,
 	WIDTH
-} from "../../utils/constant";
+} from "../../utils/utils";
 import ModalComponent from "../modal-component/modal.component";
 
 const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurrentScreen, record, setRecord}) => {
@@ -42,33 +40,31 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 		}]);
 	}, [roundRandom]);
 
-	useEffect(() => {
-		setRecord([]);
-	}, []);
+	const handleSubmit = () => {
+		let arrayToUpdate = {...record[roundRandom.roundNumber - 1], finalAttempts: scoreAttempts.attempts};
 
-	const handleSubmit = (txt) => {
-		if (txt.indexOf("&") < 0 && roundRandom.roundNumber !== MAX_NUMBER_OF_ROUNDS) {
-			let arrayToUpdate = {...record[roundRandom.roundNumber - 1], finalAttempts: scoreAttempts.attempts};
-
-			if (stringValue.text === roundRandom.randomNumber.toString()) {
-				setStringValue({
-					...stringValue,
-					isFirstTime: true,
-					text: "Congratulations! You guessed the number right!",
-					color: "green"
-				});
-				setScore({attempts: 1, score: scoreAttempts.score + SCORE_PER_QUESTION});
-				setRandomNumberFunc();
-				arrayToUpdate = {...arrayToUpdate, isPassed: true}
-			} else {
-				setStringValue({...stringValue, isFirstTime: true, text: "You guessed the wrong number", color: "#fa344f"});
-				setScore({...scoreAttempts, attempts: scoreAttempts.attempts + 1});
-			}
+		if (stringValue.text === roundRandom.randomNumber.toString()) {
+			setStringValue({
+				...stringValue,
+				isFirstTime: true,
+				text: "Congratulations! You guessed the number right!",
+				color: "green"
+			});
+			setScore({attempts: 1, score: scoreAttempts.score + SCORE_PER_QUESTION});
+			arrayToUpdate = {...arrayToUpdate, isPassed: true}
 			const finalArray = [...record];
 			finalArray.splice(roundRandom.roundNumber - 1, 1, arrayToUpdate);
 			setRecord(finalArray);
-		} else {
+			setRandomNumberFunc();
 			setCurrentScreen(END_GAME);
+		} else {
+			setStringValue({...stringValue, isFirstTime: true, text: "You guessed the wrong number", color: "#fa344f"});
+			setScore({...scoreAttempts, attempts: scoreAttempts.attempts + 1});
+		}
+
+		if (scoreAttempts.attempts === MAX_ATTEMPTS) {
+			setCurrentScreen(END_GAME);
+			return;
 		}
 
 		if (scoreAttempts.attempts >= MAX_ATTEMPTS) {
@@ -76,6 +72,8 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 			setRandomNumberFunc();
 		}
 	};
+
+	console.log(roundRandom.randomNumber);
 
 	const handleReset = () => {
 		setRecord([]);
@@ -112,7 +110,7 @@ const BoardComponent = ({roundRandom, setRandomNumberFunc, resetValues, setCurre
 					<SingleButton
 						key="submit"
 						handlePress={handleSubmit}
-						buttonText={roundRandom.roundNumber > MAX_NUMBER_OF_ROUNDS - 1 ? "Submit & Stats" : "Submit"}
+						buttonText={((scoreAttempts.attempts === MAX_ATTEMPTS)) ? "Submit & Stats" : "Submit"}
 						width={WIDTH * 2}
 						colorB="green"
 					/>

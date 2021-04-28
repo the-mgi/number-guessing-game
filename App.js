@@ -3,13 +3,9 @@ import {StyleSheet, View, Text} from 'react-native';
 import BoardComponent from "./components/board/board.component";
 import StartScreen from "./components/start-screen/start-screen.component";
 import EndScreen from "./components/end-screen/end-screen.component";
-import {GAME_SCREEN, START_GAME} from "./utils/constant";
+import {GAME_SCREEN, getRandomNumber, START_GAME} from "./utils/utils";
 
 export default function App() {
-	const getRandomNumber = () => {
-		return (Math.round(1 + Math.random() * 99))
-	}
-
 	const [roundRandom, setRoundRandom] = useState({roundNumber: 1, randomNumber: getRandomNumber()});
 	const [currentScreen, setCurrentScreen] = useState(START_GAME);
 	const [record, setRecord] = useState([]);
@@ -21,10 +17,6 @@ export default function App() {
 	const resetValues = () => {
 		setRoundRandom({roundNumber: 1, randomNumber: getRandomNumber()});
 	};
-
-	useEffect(() => {
-		resetValues();
-	}, [currentScreen]);
 
 	return (
 		<View style={styles.container}>

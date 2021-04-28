@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import SingleButton from "../board/button/button.component";
-import {GAME_SCREEN} from "../../utils/constant";
+import {GAME_SCREEN} from "../../utils/utils";
 
 const StartScreen = ({setCurrentScreen}) => {
 	return (
